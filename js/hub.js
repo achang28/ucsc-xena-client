@@ -24,20 +24,16 @@ define(["dom_helper", "session", "xenaQuery", "base", "../css/datapages.css"], f
 			return;
 		}
 
+		/*
 		// get ride of ending '/''
 		if (host[host.length-1]==='/') {
 			host = host.slice(0, host.length-1);
 		}
+		*/
 		// specially code for galaxyxena.soe.ucsc.edu
 		if (host.match(/galaxyxena.*.ucsc.edu/gi))
 		{
 			host = "https://galaxyxena.soe.ucsc.edu:443/xena";
-		}
-		// if galaxy checkbox checked, force prot to 7220
-		else if (galaxyCheckbox.checked) {
-			var tokens = host.match(/^(https?:\/\/)?([^:\/]+)(:([0-9]+))?(\/(.*))?$/);
-			tokens[4] = '7220';  //port = tokens[4];
-			host =(tokens[1]? tokens[1]:'') +(tokens[2]? tokens[2]:'')+':'+tokens[4]+ (tokens[5]? tokens[5]:'');
 		}
 
 		host = xenaQuery.server_url(host);
@@ -51,7 +47,6 @@ define(["dom_helper", "session", "xenaQuery", "base", "../css/datapages.css"], f
 		node.parentNode.insertBefore(dom_helper.elt("br"), node.previousSibling);
 		hosts.push(host);
 		node.value = "";
-		galaxyCheckbox.checked = false;
 		session.updateHostStatus(host);
 	}
 
@@ -59,8 +54,7 @@ define(["dom_helper", "session", "xenaQuery", "base", "../css/datapages.css"], f
 	session.sessionStorageInitialize();
 	var hosts = JSON.parse(sessionStorage.state).allHosts,
 			node = dom_helper.sectionNode("hub"),
-			newText, addbutton,
-			galaxyCheckbox, labelText;
+			newText, addbutton;
 
 	node.appendChild(dom_helper.elt("h2", "Data Hubs"));
 	node.appendChild(dom_helper.elt("br"));
@@ -90,18 +84,6 @@ define(["dom_helper", "session", "xenaQuery", "base", "../css/datapages.css"], f
 	addbutton.style.height ="27px";
 	node.appendChild(addbutton);
 	node.appendChild(dom_helper.elt("br"));
-
-	//galaxy xena checkbox -- if checked port forced to be 7220
-	galaxyCheckbox = document.createElement("INPUT");
-	galaxyCheckbox.setAttribute("type", "checkbox");
-	galaxyCheckbox.setAttribute("id", "galaxyCheckbox");
-	galaxyCheckbox.style.marginLeft="2px";
-	labelText = dom_helper.elt('label');
-	labelText.setAttribute("for", "galaxyCheckbox");
-	labelText.innerHTML= " galaxy embedded xena (default port 7220)";
-	labelText.setAttribute("class","galaxyText");
-	node.appendChild(galaxyCheckbox);
-	node.appendChild(labelText);
 
 	document.getElementById('main').appendChild(node);
 });
